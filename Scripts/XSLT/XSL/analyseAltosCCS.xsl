@@ -1,25 +1,25 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0" xmlns:alto="http://schema.ccs-gmbh.com/docworks/version20/alto-1-4.xsd" xmlns:str="http://exslt.org/strings" xmlns:mets="http://www.loc.gov/METS/" xmlns:mods="http://www.loc.gov/mods/v3" xmlns:xlink="http://www.w3.org/1999/xlink" extension-element-prefixes="str">
-	 
-	<!-- paramètre XSL -->  
+
+	<!-- XSL parameters -->
 	<xsl:param name="xslParam" select="otherwise" />
-	
-	<!-- variables globale  -->
+
+	<!-- global variables  -->
     <xsl:variable name="PATH">..\DOCS\</xsl:variable>
- 
-   
-     
+
+
+
 	<xsl:output method="xml" omit-xml-declaration="no"/>
 	<xsl:template match="/">
 		<analyseAlto>
 			<metad>
-			    
-				<!-- métadonnées bibliographiques 
+
+				<!-- bibliographic metadata
 count(//mets:file[substring(@ID, 4)='ALTO'])-->
-				<titre>
+				<title>
 					<xsl:value-of select="//mods:titleInfo/mods:title"/>
-				</titre>
-				<genre>PERIODIQUE</genre>
-				
+				</title>
+				<genre>PERIODICAL</genre>
+
 				<dateEdition>
 					<xsl:value-of select="//mods:dateIssued"/>
 				</dateEdition>
@@ -29,18 +29,18 @@ count(//mets:file[substring(@ID, 4)='ALTO'])-->
 				<nbpages>
 					<xsl:value-of select="$nbPages"/>
 				</nbpages>
-				
+
 			</metad>
 			<ocr>
-				<!-- pas de taux qualité  -->
+				<!-- no quality rate  -->
 			</ocr>
-			<!-- le numéro d'UC = le dossier où chercher les Alto -->
-			<!-- analyse des contenus METS  -->
-			<contenus>
+			<!-- UC number = the file where to look for the ALTO -->
+			<!-- analysis of METS content  -->
+			<contents>
 			     <nbArticle>
 					<xsl:value-of select="count(/mets:mets/mets:structMap[@TYPE='LOGICAL']//mets:div[@TYPE='ARTICLE'])"/>
 				</nbArticle>
-				<!-- 
+				<!--
 				<blocTab>
 					<xsl:value-of select="count(/mets:mets/mets:structMap[@TYPE='LOGICAL']//mets:div[@TYPE='TABLE'])"/>
 				</blocTab>
@@ -49,86 +49,86 @@ count(//mets:file[substring(@ID, 4)='ALTO'])-->
 				</blocPub>
 				<blocIllustration>
 					<xsl:value-of select="count(/mets:mets/mets:structMap[@TYPE='LOGICAL']//mets:div[@TYPE='ILLUSTRATION'])"/>
-				</blocIllustration> 
+				</blocIllustration>
 				-->
 			   <!-- <xsl:for-each select="//mets:file[substring(@ID,0,5)='ALTO']">
-			        
+
 					<xsl:variable name="tmp">
 						<xsl:value-of select="@ID"/>
 					</xsl:variable>
-					
+
 					<xsl:variable name="numPage">
 					   <xsl:value-of select="number($nomFic)"/>
-					</xsl:variable>   
+					</xsl:variable>
 					<xsl:value-of select="$numPage"/>
 					</xsl:for-each>-->
-					
-					<!-- analyse des contenus ALTO  -->
+
+					<!-- analysis of ALTO content  -->
 					<xsl:for-each select="/mets:mets/mets:fileSec/mets:fileGrp/mets:fileGrp/mets:file[substring(@ID,0,5)='ALTO']/*">
 					<page>
-					    <xsl:variable name="tmp" select="@xlink:href"/>	
+					    <xsl:variable name="tmp" select="@xlink:href"/>
 					    <xsl:variable name="ficAlto">
-						     <xsl:value-of select="substring($tmp,10)"/> <!-- supprimer "file://."  -->
-					    </xsl:variable>	
+						     <xsl:value-of select="substring($tmp,10)"/> <!-- suppress "file://."  -->
+					    </xsl:variable>
 						<fichier>
 						     <xsl:value-of select="$ficAlto"/>
-						</fichier>  
-						
-						<!-- Calcul du chemin vers le fichier  -->
-										
-					<!-- Les dossiers des documents sont stockés dans le dossier DOCS, au même niveau que XSL  -->
-					<xsl:variable name="chemin" select="concat($PATH,$xslParam)"/>
-					<xsl:variable name="chemin" select="concat($chemin,'\')"/>   
-					<xsl:variable name="chemin" select="concat($chemin,$ficAlto)"/>    
-												    
+						</fichier>
+
+						<!-- calculating the file path  -->
+
+					<!-- document folders are stored in the DOCS folder, at the same level as XSL  -->
+					<xsl:variable name="path" select="concat($PATH,$xslParam)"/>
+					<xsl:variable name="path" select="concat($path,'\')"/>
+					<xsl:variable name="path" select="concat($path,$ficAlto)"/>
+
 					<xsl:choose>
-							<xsl:when test="document($chemin)">
+							<xsl:when test="document($path)">
 								<nbString>
-								    <xsl:value-of select="count(document($chemin)/alto/Layout/Page/PrintSpace//String)"/>
+								    <xsl:value-of select="count(document($path)/alto/Layout/Page/PrintSpace//String)"/>
 								</nbString>
 							</xsl:when>
 							<xsl:otherwise>
 								<FICHIER_ABSENT/>
 							</xsl:otherwise>
 						</xsl:choose>
-						
-						<nbCar><!-- pas utile
+
+						<nbCar><!-- useless
 									<xsl:variable name="numCar">
-										<xsl:for-each select="document($chemin)//String">
+										<xsl:for-each select="document($path)//String">
 											<xsl:value-of select="@CONTENT"/>
 										</xsl:for-each>
 									</xsl:variable>
 									<xsl:value-of select="string-length($numCar)"/>-->
 						</nbCar>
-						<!-- les blocs   -->
+						<!-- the blocks   -->
 						<blocTexte>
-								<xsl:value-of select="count(document($chemin)/alto/Layout/Page/PrintSpace//TextBlock)"/>
+								<xsl:value-of select="count(document($path)/alto/Layout/Page/PrintSpace//TextBlock)"/>
 						</blocTexte>
 						<blocTab>
-								<xsl:value-of select="count(document($chemin)/alto/Layout/Page/PrintSpace//ComposedBlock[(@TYPE='Table')])"/>
+								<xsl:value-of select="count(document($path)/alto/Layout/Page/PrintSpace//ComposedBlock[(@TYPE='Table')])"/>
 						</blocTab>
-						<!-- les publicités   -->
+						<!-- advertisements   -->
 						<blocPub>
-								<xsl:value-of select="count(document($chemin)/alto/Layout/Page/PrintSpace//ComposedBlock[(@TYPE='Advertisement')])"/>
-						</blocPub> 
-						<!-- les blocs de texte publicités   : inutile car un TextBlock par ComposedBlock 
+								<xsl:value-of select="count(document($path)/alto/Layout/Page/PrintSpace//ComposedBlock[(@TYPE='Advertisement')])"/>
+						</blocPub>
+						<!-- advertisements text blocks  : useless because a TextBlock per ComposedBlock
 						<blocTextePub>
-								<xsl:value-of select="count(document($chemin)//ComposedBlock[(@TYPE='Advertisement')]/TextBlock)"/>
+								<xsl:value-of select="count(document($path)//ComposedBlock[(@TYPE='Advertisement')]/TextBlock)"/>
 						</blocTextePub> -->
-						<!-- les images  -->
+						<!-- images  -->
 						<blocIllustration>
-								<xsl:value-of select="count(document($chemin)/alto/Layout/Page/PrintSpace//Illustration)+count(document($chemin)/alto/Layout/Page/PrintSpace//ComposedBlock[(@TYPE='Illustration')])"/>
+								<xsl:value-of select="count(document($path)/alto/Layout/Page/PrintSpace//Illustration)+count(document($path)/alto/Layout/Page/PrintSpace//ComposedBlock[(@TYPE='Illustration')])"/>
 						</blocIllustration>
-						<!-- les blocs image publicités   : inutile car non segmentés 						
+						<!-- advertisements image blocks : useless because not segmented
 						<blocIllustrationPub>
-								<xsl:value-of select="count(document($chemin)//ComposedBlock[(@TYPE='Advertisement')]/Illustration)"/>
+								<xsl:value-of select="count(document($path)//ComposedBlock[(@TYPE='Advertisement')]/Illustration)"/>
 						</blocIllustrationPub> -->
 						<sommeWC>
-							<xsl:value-of select="sum(document($chemin)/alto/Layout/Page/PrintSpace//String/@WC)"/>
-						</sommeWC>		
-					</page>	   
+							<xsl:value-of select="sum(document($path)/alto/Layout/Page/PrintSpace//String/@WC)"/>
+						</sommeWC>
+					</page>
 				</xsl:for-each>
-			</contenus>
+			</contents>
 		</analyseAlto>
 	</xsl:template>
 </xsl:stylesheet>
