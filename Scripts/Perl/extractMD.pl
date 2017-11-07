@@ -90,8 +90,8 @@ sub getALTO {my ($t, $elt) = @_;
 
 	   #my $page = $elt->child(0)->att(PHYSICAL_IMG_NR);
 	   if ($numPageALTO == 1) {
-	     $hash{"largeur"} = int($elt->child(0)->att(WIDTH)*25.4/$DPI);
-	     $hash{"hauteur"} = int($elt->child(0)->att(HEIGHT)*25.4/$DPI);
+	     $hash{"width"} = int($elt->child(0)->att(WIDTH)*25.4/$DPI);
+	     $hash{"height"} = int($elt->child(0)->att(HEIGHT)*25.4/$DPI);
 	     }
 	   # obtained by match
 	   #$hash{$page."_words"} = scalar($elt->get_xpath('//String'));
@@ -176,7 +176,7 @@ say "the code took:",timestr($td);
 
 
 # ----------------------
-# processing documents metadata from METS
+# processing document metadata from METS
 sub generateMD {
 	my $rep=shift;
 	my $idDoc=shift;
@@ -198,7 +198,7 @@ sub generateMD {
 # parsing a METS file and writing the metadata
 sub readMD {
 	my $ficMETS=shift;
-	my $idDoc=shift; # ID document
+	my $idDoc=shift; # document ID
 	my $handler=shift;
 
 	my $t;
@@ -206,13 +206,13 @@ sub readMD {
 	my $title = "unknown";
 	my $date = "unknown";
 
-	# raz hash
+	# reset hash
 	%hash = ();
 
 	print "Loading $ficMETS...\n";
   #$t = XML::Twig -> new(output_filter=>'safe');
   #$t = XML::Twig -> new();
-  #$t -> setTwigHandlers($handlerMETS); # parse with a gestionnaire
+  #$t -> setTwigHandlers($handlerMETS); # parse with a handler
   #$t -> parsefile($ficMETS);
   #$t -> purge(); # unload the parsed content
 
@@ -264,7 +264,7 @@ sub generateMDALTO {
 sub readMDALTO {
 	my $file=shift;
 	my $numPage=shift;
-	my $idDoc=shift; # ID document
+	my $idDoc=shift; # document ID
 	my $handler=shift;
 
 	#my $t;
@@ -276,17 +276,17 @@ sub readMDALTO {
   my $tabs = 0;
 
 
-	# raz hash
+	# reset hash
 	#%hash = ();
 
 	#  extract by parsing (slow)
 	#$t = XML::Twig -> new(output_filter=>'safe');
-  #$t -> setTwigHandlers($handlerALTO); # parsing with a gestionnaire
+  #$t -> setTwigHandlers($handlerALTO); # parsing with a handler
   #$t -> parsefile($file);
   #$t -> purge(); # unload the parsed content
 
   # extract by regex (fast)
-  open my $fh, '<', $file or die "Cannot open : $fichier !";
+  open my $fh, '<', $file or die "Cannot open : $file !";
 
   if ($numPage == 1) {
   	local $/;
@@ -386,13 +386,13 @@ sub writeMD {
   	print {$fh} "   \"dateEdition\": \"".$hash{"date"}."\",\n";
   	print {$fh} "   \"nbPage\": ".$hash{"pages"}.",\n";
   	print {$fh} "     \"suppl\": \"".$hash{"supplement"}."\"},\n";
-  	print {$fh} "  \"contenus\": {\n";
+  	print {$fh} "  \"contents\": {\n";
   	print {$fh} "     \"nbArticle\": ".$hash{"articles"}.",\n";
   	print {$fh} "     \"width\": ".$hash{"width"}.",\n";  # in mm
     print {$fh} "     \"height\": ".$hash{"height"}.",\n";
     print {$fh} "  \"page\": [\n";
     for($p = 1; $p <= $hash{"pages"}; $p++) {
-      print {$fh} "    {\"nbWord\": ".$hash{$p."_words"}.",";
+      print {$fh} "    {\"nbWords\": ".$hash{$p."_words"}.",";
       print {$fh} " \"textBlocks\": ".$hash{$p."_textBlocks"}.",";
       print {$fh} " \"tabBlocks\": ".$hash{$p."_tabBlocks"}.",";
       print {$fh} " \"adBlocks\": ".$hash{$p."_adBlocks"}.",";
