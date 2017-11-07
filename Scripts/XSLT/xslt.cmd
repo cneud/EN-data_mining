@@ -21,7 +21,7 @@
 @REM XSL parameter: document ID
 @if %5"O" EQU "O" goto error
 
-@REM choice of simulation of processing mode
+@REM choice of 'simulation' or 'processing' mode
 @if %6"O" EQU "O" goto error
 
 PATH=%PATH%;"C:\Program Files (x86)\Java\jre6\bin"
