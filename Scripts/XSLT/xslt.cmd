@@ -9,7 +9,7 @@
 @REM the xml file to parse
 @if %1"O" EQU "O" goto error
 
-@REM xslt stylesheets
+@REM xslt stylesheet
 @if %2"O" EQU "O" goto error
 
 @REM name of the output file
